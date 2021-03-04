@@ -11,7 +11,7 @@ func TestGenerateWithCRCLengthLessThan4(t *testing.T) {
 		Editable:        false,
 		Expiry:          "20260304",
 		CompanyName:     "testcompany",
-		Amount:          "0.99",
+		Amount:          "0.1",
 		ReferenceNumber: "testordernumber12345678",
 	})
 	t.Log(val)
