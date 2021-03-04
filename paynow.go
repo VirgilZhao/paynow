@@ -16,9 +16,10 @@ type RootObject struct {
 }
 
 type DataObject struct {
-	ID    string
-	Name  string
-	Value interface{}
+	ID        string
+	Name      string
+	MaxLength int
+	Value     interface{}
 }
 
 func (obj DataObject) getString() string {
@@ -26,6 +27,9 @@ func (obj DataObject) getString() string {
 	switch obj.Value.(type) {
 	case string:
 		valueStr = obj.Value.(string)
+		if len(valueStr) > obj.MaxLength {
+			panic(fmt.Sprintf("id %s value %s is out of max length %d", obj.ID, valueStr, obj.MaxLength))
+		}
 		break
 	case []DataObject:
 		subObjects := obj.Value.([]DataObject)
@@ -60,33 +64,39 @@ func (rt *RootObject) getString() string {
 
 func getPayNowDataObject(options Options) *RootObject {
 	payloadFormatIndicator := DataObject{
-		ID:    "00",
-		Name:  "Payload Format Indicator",
-		Value: "01",
+		ID:        "00",
+		Name:      "Payload Format Indicator",
+		MaxLength: 2,
+		Value:     "01",
 	}
 	pointOfInitiationMethod := DataObject{
-		ID:    "01",
-		Name:  "Point of Initiation Method",
-		Value: "12",
+		ID:        "01",
+		Name:      "Point of Initiation Method",
+		MaxLength: 2,
+		Value:     "12",
 	}
 	payNowIndicator := DataObject{
-		ID:    "00",
-		Name:  "PayNow Indicator",
-		Value: "SG.PAYNOW",
+		ID:        "00",
+		Name:      "PayNow Indicator",
+		MaxLength: 32,
+		Value:     "SG.PAYNOW",
 	}
 	mobileOrUenAccount := DataObject{
-		ID:    "01",
-		Name:  "Mobile Or UEN Account",
-		Value: "2",
+		ID:        "01",
+		Name:      "Mobile Or UEN Account",
+		MaxLength: 1,
+		Value:     "2",
 	}
 	uenAccount := DataObject{
-		ID:    "02",
-		Name:  "UEN Account Number",
-		Value: options.UEN,
+		ID:        "02",
+		MaxLength: 10,
+		Name:      "UEN Account Number",
+		Value:     options.UEN,
 	}
 	editable := DataObject{
-		ID:   "03",
-		Name: "payment amount editable",
+		ID:        "03",
+		MaxLength: 1,
+		Name:      "payment amount editable",
 	}
 	if options.Editable {
 		editable.Value = "1"
@@ -101,36 +111,42 @@ func getPayNowDataObject(options Options) *RootObject {
 	}
 	if len(options.Expiry) == 8 {
 		expiry := DataObject{
-			ID:    "04",
-			Name:  "Expiry Date",
-			Value: options.Expiry,
+			ID:        "04",
+			Name:      "Expiry Date",
+			MaxLength: 8,
+			Value:     options.Expiry,
 		}
 		merchantAccountInfoTemplateValues = append(merchantAccountInfoTemplateValues, expiry)
 	}
 	merchantAccountInfoTemplate := DataObject{
-		ID:    "26",
-		Name:  "Merchant Account Info Template",
-		Value: merchantAccountInfoTemplateValues,
+		ID:        "26",
+		Name:      "Merchant Account Info Template",
+		MaxLength: 99,
+		Value:     merchantAccountInfoTemplateValues,
 	}
 	merchantCategoryCode := DataObject{
-		ID:    "52",
-		Name:  "Merchant Category Code",
-		Value: "0000",
+		ID:        "52",
+		Name:      "Merchant Category Code",
+		MaxLength: 4,
+		Value:     "0000",
 	}
 	currency := DataObject{
-		ID:    "53",
-		Name:  "Currency",
-		Value: "702",
+		ID:        "53",
+		Name:      "Currency",
+		MaxLength: 3,
+		Value:     "702",
 	}
 	transactionAmount := DataObject{
-		ID:    "54",
-		Name:  "Transaction Amount",
-		Value: options.Amount,
+		ID:        "54",
+		Name:      "Transaction Amount",
+		MaxLength: 13,
+		Value:     options.Amount,
 	}
 	countryCode := DataObject{
-		ID:    "58",
-		Name:  "Country Code",
-		Value: "SG",
+		ID:        "58",
+		Name:      "Country Code",
+		MaxLength: 2,
+		Value:     "SG",
 	}
 	objects := []DataObject{
 		payloadFormatIndicator,
@@ -143,33 +159,38 @@ func getPayNowDataObject(options Options) *RootObject {
 	}
 	if len(options.CompanyName) > 0 {
 		companyName := DataObject{
-			ID:    "59",
-			Name:  "Company Name",
-			Value: options.CompanyName,
+			ID:        "59",
+			Name:      "Company Name",
+			MaxLength: 25,
+			Value:     options.CompanyName,
 		}
 		objects = append(objects, companyName)
 	}
 	merchantCity := DataObject{
-		ID:    "60",
-		Name:  "Merchant City",
-		Value: "Singapore",
+		ID:        "60",
+		Name:      "Merchant City",
+		MaxLength: 15,
+		Value:     "Singapore",
 	}
 	objects = append(objects, merchantCity)
 	referenceNumber := DataObject{
-		ID:    "01",
-		Name:  "Bill/Reference Number",
-		Value: options.ReferenceNumber,
+		ID:        "01",
+		Name:      "Bill/Reference Number",
+		MaxLength: 25,
+		Value:     options.ReferenceNumber,
 	}
-	addiontialDataFields := DataObject{
-		ID:    "62",
-		Name:  "Additional Data Fields",
-		Value: []DataObject{referenceNumber},
+	additionalDataFields := DataObject{
+		ID:        "62",
+		Name:      "Additional Data Fields",
+		MaxLength: 99,
+		Value:     []DataObject{referenceNumber},
 	}
-	objects = append(objects, addiontialDataFields)
+	objects = append(objects, additionalDataFields)
 	crc := DataObject{
-		ID:    "63",
-		Name:  "CRC",
-		Value: "",
+		ID:        "63",
+		Name:      "CRC",
+		MaxLength: 4,
+		Value:     "",
 	}
 	objects = append(objects, crc)
 	rootObject := &RootObject{DataObjects: objects}
