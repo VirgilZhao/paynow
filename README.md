@@ -61,7 +61,7 @@ A entire data message is the combination of data objects, below table shows the 
  | ----| ---- | ---- | ---- | ---- |
  | Globally Unique Identifier | 00 | up to 32 | 0009SG.PAYNOW| static value|
  | Account Type | 01 | 01 | 01012 | value 0 for mobile, value 2 for UEN |
- | UEN | 02 | up to 10 |  020812345678 | UEN number |
+ | UEN | 02 | up to 13 |  020812345678 | UEN number takes 10, suffix takes 3 |
  | Payment Amount Editable | 03 | 01 | 1 | value 1 payment is editable, value 0 is not editable |
  | Expiry Date | 04 | 08 | 040820260304 | expire date format YYYYMMDD| 
  

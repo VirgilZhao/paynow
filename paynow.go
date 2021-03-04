@@ -89,7 +89,7 @@ func getPayNowDataObject(options Options) *RootObject {
 	}
 	uenAccount := DataObject{
 		ID:        "02",
-		MaxLength: 10,
+		MaxLength: 13,
 		Name:      "UEN Account Number",
 		Value:     options.UEN,
 	}

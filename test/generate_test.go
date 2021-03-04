@@ -40,3 +40,15 @@ func TestCompanyNameOutOfLength(t *testing.T) {
 	})
 	t.Log(val)
 }
+
+func TestUENWithSuffix(t *testing.T) {
+	val := paynow.GeneratePayNowString(paynow.Options{
+		UEN:             "123456789001",
+		Editable:        false,
+		Expiry:          "20260304",
+		CompanyName:     "testcompany",
+		Amount:          "0.99",
+		ReferenceNumber: "testordernumber12345678",
+	})
+	t.Log(val)
+}
